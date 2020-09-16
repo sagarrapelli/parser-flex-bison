@@ -1,0 +1,389 @@
+Terminals which are not used
+
+   '+'
+   '/'
+
+
+Grammar
+
+    0 $accept: start $end
+
+    1 start: /* empty */
+    2      | TOK_MAIN '{' line '}'
+
+    3 line: /* empty */
+    4     | line vardef
+    5     | line statements
+
+    6 vardef: TOK_INT TOK_ID ';'
+    7       | TOK_FLOAT TOK_ID ';'
+
+    8 statements: TOK_ID '=' exp ';'
+    9           | TOK_PRINTID TOK_ID ';'
+   10           | TOK_PRINTEXP exp ';'
+
+   11 exp: TOK_INUM
+   12    | TOK_ID
+   13    | f_point
+   14    | exp '-' exp
+   15    | exp '*' exp
+
+   16 f_point: TOK_FNUM
+   17        | TOK_INUM 'E' TOK_INUM
+   18        | f_point 'E' TOK_INUM
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'*' (42) 15
+'+' (43)
+'-' (45) 14
+'/' (47)
+';' (59) 6 7 8 9 10
+'=' (61) 8
+'E' (69) 17 18
+'{' (123) 2
+'}' (125) 2
+error (256)
+TOK_FNUM (258) 16
+TOK_INUM (259) 11 17 18
+TOK_ID (260) 6 7 8 9 12
+TOK_INT (261) 6
+TOK_FLOAT (262) 7
+TOK_MAIN (263) 2
+TOK_PRINTEXP (264) 10
+TOK_PRINTID (265) 9
+
+
+Nonterminals, with rules where they appear
+
+$accept (20)
+    on left: 0
+start (21)
+    on left: 1 2, on right: 0
+line (22)
+    on left: 3 4 5, on right: 2 4 5
+vardef (23)
+    on left: 6 7, on right: 4
+statements (24)
+    on left: 8 9 10, on right: 5
+exp (25)
+    on left: 11 12 13 14 15, on right: 8 10 14 15
+f_point (26)
+    on left: 16 17 18, on right: 13 18
+
+
+state 0
+
+    0 $accept: . start $end
+
+    TOK_MAIN  shift, and go to state 1
+
+    $default  reduce using rule 1 (start)
+
+    start  go to state 2
+
+
+state 1
+
+    2 start: TOK_MAIN . '{' line '}'
+
+    '{'  shift, and go to state 3
+
+
+state 2
+
+    0 $accept: start . $end
+
+    $end  shift, and go to state 4
+
+
+state 3
+
+    2 start: TOK_MAIN '{' . line '}'
+
+    $default  reduce using rule 3 (line)
+
+    line  go to state 5
+
+
+state 4
+
+    0 $accept: start $end .
+
+    $default  accept
+
+
+state 5
+
+    2 start: TOK_MAIN '{' line . '}'
+    4 line: line . vardef
+    5     | line . statements
+
+    TOK_ID        shift, and go to state 6
+    TOK_INT       shift, and go to state 7
+    TOK_FLOAT     shift, and go to state 8
+    TOK_PRINTEXP  shift, and go to state 9
+    TOK_PRINTID   shift, and go to state 10
+    '}'           shift, and go to state 11
+
+    vardef      go to state 12
+    statements  go to state 13
+
+
+state 6
+
+    8 statements: TOK_ID . '=' exp ';'
+
+    '='  shift, and go to state 14
+
+
+state 7
+
+    6 vardef: TOK_INT . TOK_ID ';'
+
+    TOK_ID  shift, and go to state 15
+
+
+state 8
+
+    7 vardef: TOK_FLOAT . TOK_ID ';'
+
+    TOK_ID  shift, and go to state 16
+
+
+state 9
+
+   10 statements: TOK_PRINTEXP . exp ';'
+
+    TOK_FNUM  shift, and go to state 17
+    TOK_INUM  shift, and go to state 18
+    TOK_ID    shift, and go to state 19
+
+    exp      go to state 20
+    f_point  go to state 21
+
+
+state 10
+
+    9 statements: TOK_PRINTID . TOK_ID ';'
+
+    TOK_ID  shift, and go to state 22
+
+
+state 11
+
+    2 start: TOK_MAIN '{' line '}' .
+
+    $default  reduce using rule 2 (start)
+
+
+state 12
+
+    4 line: line vardef .
+
+    $default  reduce using rule 4 (line)
+
+
+state 13
+
+    5 line: line statements .
+
+    $default  reduce using rule 5 (line)
+
+
+state 14
+
+    8 statements: TOK_ID '=' . exp ';'
+
+    TOK_FNUM  shift, and go to state 17
+    TOK_INUM  shift, and go to state 18
+    TOK_ID    shift, and go to state 19
+
+    exp      go to state 23
+    f_point  go to state 21
+
+
+state 15
+
+    6 vardef: TOK_INT TOK_ID . ';'
+
+    ';'  shift, and go to state 24
+
+
+state 16
+
+    7 vardef: TOK_FLOAT TOK_ID . ';'
+
+    ';'  shift, and go to state 25
+
+
+state 17
+
+   16 f_point: TOK_FNUM .
+
+    $default  reduce using rule 16 (f_point)
+
+
+state 18
+
+   11 exp: TOK_INUM .
+   17 f_point: TOK_INUM . 'E' TOK_INUM
+
+    'E'  shift, and go to state 26
+
+    $default  reduce using rule 11 (exp)
+
+
+state 19
+
+   12 exp: TOK_ID .
+
+    $default  reduce using rule 12 (exp)
+
+
+state 20
+
+   10 statements: TOK_PRINTEXP exp . ';'
+   14 exp: exp . '-' exp
+   15    | exp . '*' exp
+
+    '-'  shift, and go to state 27
+    '*'  shift, and go to state 28
+    ';'  shift, and go to state 29
+
+
+state 21
+
+   13 exp: f_point .
+   18 f_point: f_point . 'E' TOK_INUM
+
+    'E'  shift, and go to state 30
+
+    $default  reduce using rule 13 (exp)
+
+
+state 22
+
+    9 statements: TOK_PRINTID TOK_ID . ';'
+
+    ';'  shift, and go to state 31
+
+
+state 23
+
+    8 statements: TOK_ID '=' exp . ';'
+   14 exp: exp . '-' exp
+   15    | exp . '*' exp
+
+    '-'  shift, and go to state 27
+    '*'  shift, and go to state 28
+    ';'  shift, and go to state 32
+
+
+state 24
+
+    6 vardef: TOK_INT TOK_ID ';' .
+
+    $default  reduce using rule 6 (vardef)
+
+
+state 25
+
+    7 vardef: TOK_FLOAT TOK_ID ';' .
+
+    $default  reduce using rule 7 (vardef)
+
+
+state 26
+
+   17 f_point: TOK_INUM 'E' . TOK_INUM
+
+    TOK_INUM  shift, and go to state 33
+
+
+state 27
+
+   14 exp: exp '-' . exp
+
+    TOK_FNUM  shift, and go to state 17
+    TOK_INUM  shift, and go to state 18
+    TOK_ID    shift, and go to state 19
+
+    exp      go to state 34
+    f_point  go to state 21
+
+
+state 28
+
+   15 exp: exp '*' . exp
+
+    TOK_FNUM  shift, and go to state 17
+    TOK_INUM  shift, and go to state 18
+    TOK_ID    shift, and go to state 19
+
+    exp      go to state 35
+    f_point  go to state 21
+
+
+state 29
+
+   10 statements: TOK_PRINTEXP exp ';' .
+
+    $default  reduce using rule 10 (statements)
+
+
+state 30
+
+   18 f_point: f_point 'E' . TOK_INUM
+
+    TOK_INUM  shift, and go to state 36
+
+
+state 31
+
+    9 statements: TOK_PRINTID TOK_ID ';' .
+
+    $default  reduce using rule 9 (statements)
+
+
+state 32
+
+    8 statements: TOK_ID '=' exp ';' .
+
+    $default  reduce using rule 8 (statements)
+
+
+state 33
+
+   17 f_point: TOK_INUM 'E' TOK_INUM .
+
+    $default  reduce using rule 17 (f_point)
+
+
+state 34
+
+   14 exp: exp . '-' exp
+   14    | exp '-' exp .
+   15    | exp . '*' exp
+
+    '*'  shift, and go to state 28
+
+    $default  reduce using rule 14 (exp)
+
+
+state 35
+
+   14 exp: exp . '-' exp
+   15    | exp . '*' exp
+   15    | exp '*' exp .
+
+    $default  reduce using rule 15 (exp)
+
+
+state 36
+
+   18 f_point: f_point 'E' TOK_INUM .
+
+    $default  reduce using rule 18 (f_point)
