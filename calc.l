@@ -15,27 +15,21 @@ digit	([0-9])
 "float"				{	return(TOK_FLOAT);}
 "printID"			{   	return(TOK_PRINTID);}
 "printExp"			{   	return(TOK_PRINTEXP);}
-
 {digit}+			{
 					yylval.int_val = atoi(yytext);
 					return TOK_INUM;
 				}
-
 [0-9]+\.[0-9]+			{
 					yylval.fval = atof(yytext);
 					return TOK_FNUM;
 				}
-
-[a-z]+[a-zA-Z0-9]* 		{	yylval.id = strdup(yytext);return(TOK_ID);}
-
-
-
+[a-z]+[a-zA-Z0-9]* 		{	yylval.id = strdup(yytext);
+					return(TOK_ID);
+				}
 [-*=;{}E]			{	return yytext[0];}
-
 [ \t]				;/* ignore this */
-[\n] 				{++line_no;}
-
-.					{	printf("Lexical error :%s\n", yytext);}
+[\n] 				{	++line_no;}
+.				{	printf("Lexical error :%s\n", yytext);}
 
 %%
 

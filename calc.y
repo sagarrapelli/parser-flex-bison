@@ -42,50 +42,54 @@ extern int line_no;
 %%
 
 start: 		
-				| TOK_MAIN '{' line '}'		{YYACCEPT;}
-				;
+			| TOK_MAIN '{' line '}'		{YYACCEPT;}
+			;
 
 line:		
-				| line vardef
-				| line statements
-				;
+			| line vardef
+			| line statements
+			;
 
 
-vardef:		 	TOK_INT TOK_ID ';'			{add_sym_tab($2,1);}	
-				| TOK_FLOAT TOK_ID ';'		{add_sym_tab($2,0);}
-				;
+vardef:		 	TOK_INT TOK_ID ';'		{add_sym_tab($2,1);}	
+			| TOK_FLOAT TOK_ID ';'		{add_sym_tab($2,0);}
+			;
 
-statements:		TOK_ID '=' exp ';'			{
-											int k=get_id($1);
-											if(k==$3.type)	
-												{update_sym_tab($1,$3.val);}
-											else
-												{printf("Line %d:type error\n",line_no);YYERROR;}
-											}					
-				| TOK_PRINTID TOK_ID ';'	{print_sym_tab($2);}
-				| TOK_PRINTEXP exp ';' 		{if(is_integer($2.val))
-												printf("%d\n",(int)$2.val);
-											else
-												printf("%.2f\n",$2.val);}
-				;
+statements:		TOK_ID '=' exp ';'		{
+							int k = get_id($1);
+							if(k == $3.type)	
+								{update_sym_tab($1,$3.val);}
+							else
+								{printf("Line %d:type error\n",line_no); YYERROR;}
+							}					
+			| TOK_PRINTID TOK_ID ';'	{print_sym_tab($2);}
+			| TOK_PRINTEXP exp ';' 		{
+							if(is_integer($2.val))
+								printf("%d\n",(int)$2.val);
+							else
+								printf("%.2f\n",$2.val);
+							}
+			;
 
 
-exp:			TOK_INUM					{$$.type=1;$$.val=$1;}
-				|TOK_ID 					{$$=get_sym_tab($1);}
-				|f_point					{$$.type=0;$$.val=$1;}								
-				| exp '-' exp 				{
-												if($1.type==$3.type){$$.type = $1.type;$$.val=$1.val-$3.val;}
-												else {printf("Line %d:type error\n",line_no);YYERROR;}}
-				| exp '*' exp 				{
-												if($1.type==$3.type){$$.type = $1.type;$$.val=$1.val*$3.val;}
-												else {printf("Line %d:type error\n",line_no);YYERROR;}}
-				;
+exp:			TOK_INUM			{$$.type = 1; $$.val = $1;}
+			|TOK_ID 			{$$ = get_sym_tab($1);}
+			|f_point			{$$.type = 0; $$.val = $1;}								
+			| exp '-' exp 			{
+							if($1.type == $3.type){$$.type = $1.type; $$.val = $1.val - $3.val;}
+							else {printf("Line %d:type error\n",line_no); YYERROR;}
+							}
+			| exp '*' exp 			{
+							if($1.type == $3.type){$$.type = $1.type; $$.val = $1.val * $3.val;}
+							else {printf("Line %d:type error\n",line_no); YYERROR;}
+							}
+			;
 
 
 f_point:		TOK_FNUM
-				| TOK_INUM'E'TOK_INUM		{$$=$1*pow(10,$3);}
-				| f_point'E'TOK_INUM		{$$=$1*pow(10,$3);}
-				;
+			| TOK_INUM'E'TOK_INUM		{$$ = $1 * pow(10,$3);}
+			| f_point'E'TOK_INUM		{$$ = $1 * pow(10,$3);}
+			;
 
 %%
 
